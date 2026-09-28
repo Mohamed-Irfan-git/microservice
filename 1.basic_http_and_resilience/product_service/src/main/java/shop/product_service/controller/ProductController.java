@@ -9,6 +9,7 @@ import shop.product_service.dto.ProductRequest;
 import shop.product_service.dto.ProductResponse;
 import shop.product_service.service.ProductService;
 
+import java.sql.Time;
 import java.util.List;
 
 @RestController
@@ -39,8 +40,8 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getProductById(
-            @PathVariable Long id) {
-
+            @PathVariable Long id) throws InterruptedException {
+        Thread.sleep(5000);
         return ResponseEntity.ok(
                 productService.getProductById(id)
         );
