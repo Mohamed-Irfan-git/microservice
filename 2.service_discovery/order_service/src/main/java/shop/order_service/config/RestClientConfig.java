@@ -1,10 +1,11 @@
 package shop.order_service.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
@@ -13,22 +14,27 @@ import java.time.Duration;
 @Configuration
 public class RestClientConfig {
 
-    //timeout case
-    @Bean
-    public RestClient productRestClient(
-            @Value("${services.product.url}") String productServiceUrl) {
+    private ClientHttpRequestFactory requestFactory() {
 
         HttpClientSettings settings = HttpClientSettings.defaults()
                 .withConnectTimeout(Duration.ofSeconds(2))
                 .withReadTimeout(Duration.ofSeconds(3));
 
-        ClientHttpRequestFactory requestFactory =
-                ClientHttpRequestFactoryBuilder.detect()
-                        .build(settings);
+        return ClientHttpRequestFactoryBuilder.detect()
+                .build(settings);
+    }
 
+    @Bean
+    @Primary
+    public RestClient.Builder restClientBuilder() {
         return RestClient.builder()
-                .baseUrl(productServiceUrl)
-                .requestFactory(requestFactory)
-                .build();
+                .requestFactory(requestFactory());
+    }
+
+    @Bean
+    @LoadBalanced
+    public RestClient.Builder loadBalancedRestClientBuilder() {
+        return RestClient.builder()
+                .requestFactory(requestFactory());
     }
 }
