@@ -40,8 +40,8 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getProductById(
-            @PathVariable Long id) throws InterruptedException {
-        Thread.sleep(5000);
+            @PathVariable Long id) {
+
         return ResponseEntity.ok(
                 productService.getProductById(id)
         );
